@@ -197,3 +197,11 @@ licenses: .bin/licenses node_modules  # checks open-source licenses
 node_modules: package-lock.json
 	npm ci
 	touch node_modules
+
+.PHONY: test-local
+test-local:
+	docker-compose -f quickstart.yml -f contrib/quickstart/kratos/cloud/quickstart.yml -f quickstart-postgres.yml up --build --force-recreate -d
+
+.PHONY: destroy-local
+destroy-local:
+	docker-compose -f quickstart.yml -f contrib/quickstart/kratos/cloud/quickstart.yml -f quickstart-postgres.yml down

@@ -3,12 +3,8 @@ services:
   kratos-migrate:
     image: oryd/kratos:v0.11.1
     environment:
-      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc
+      - DSN=${DSN}
     volumes:
-      - type: volume
-        source: kratos-sqlite
-        target: /var/lib/sqlite
-        read_only: false
       - type: bind
         source: ./contrib/quickstart/kratos/email-password
         target: /etc/config/kratos
@@ -16,14 +12,7 @@ services:
     restart: on-failure
     networks:
       - intranet
-  kratos-selfservice-ui-node:
-    image: oryd/kratos-selfservice-ui-node:v0.11.1
-    environment:
-      - KRATOS_PUBLIC_URL=http://kratos:4433/
-      - KRATOS_BROWSER_URL=http://127.0.0.1:4433/
-    networks:
-      - intranet
-    restart: on-failure
+
   kratos:
     depends_on:
       - kratos-migrate
@@ -33,14 +22,10 @@ services:
       - '4434:4434' # admin
     restart: unless-stopped
     environment:
-      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
+      - DSN=${DSN}
       - LOG_LEVEL=trace
     command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
     volumes:
-      - type: volume
-        source: kratos-sqlite
-        target: /var/lib/sqlite
-        read_only: false
       - type: bind
         source: ./contrib/quickstart/kratos/email-password
         target: /etc/config/kratos
@@ -55,5 +40,3 @@ services:
       - intranet
 networks:
   intranet:
-volumes:
-  kratos-sqlite:
